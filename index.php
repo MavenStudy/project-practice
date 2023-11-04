@@ -1,82 +1,21 @@
 <?php
-abstract class AbstractProduct
-{
-    protected $name;
+require_once __DIR__.'/vendor/autoload.php';
 
-    public function getName()
-    {
-        return $this->name;
-    }
+use Maven\ProjectPractice\Blog\Name;
+use Maven\ProjectPractice\Blog\User;
+use Maven\ProjectPractice\Blog\Post;
+use Maven\ProjectPractice\Blog\Comment;
 
-    public function getPrice()
-    {
-        return $this->price;
-    }
-    protected $price;
+use Faker\Factory;
 
-    public function __construct($name, $price)
-    {
-        $this->name = $name;
-        $this->price = $price;
-    }
+$faker = Factory::create('ru_RU');
 
-    abstract public function calculateFinalCost();
+$user= new User(1, new Name($faker->firstNameMale(), $faker->lastName()));
+echo "Пользователь: ".$user."<br>";
 
-}
+$post = new Post(1,1, "Заголовок:", $faker->realText());
+echo $post."<br>";
 
-class DigitalProduct extends AbstractProduct
-{
-    protected $quantity;
-    public function __construct($name, $price, $quantity)
-    {
-        parent::__construct($name, $price);
-        $this->quantity = $quantity;
-    }
-    public function calculateFinalCost()
-    {
-        return $this->price/2 * $this->quantity;
-    }
-}
-
-class PhysicalProduct extends AbstractProduct
-{
-    protected $quantity;
-
-    public function __construct($name, $price, $quantity)
-    {
-        parent::__construct($name, $price);
-        $this->quantity = $quantity;
-    }
-
-    public function calculateFinalCost()
-    {
-        return $this->price * $this->quantity;
-    }
-}
-class WeightedProduct extends AbstractProduct
-{
-    protected $weight;
-
-    public function __construct($name, $price, $weight)
-    {
-        parent::__construct($name, $price);
-        $this->weight = $weight;
-    }
-
-    public function calculateFinalCost()
-    {
-        return $this->price * $this->weight ;
-    }
-}
-
-$digitalProduct = new DigitalProduct('Цифровой товар', 20,2);
-$physicalProduct = new PhysicalProduct('Физический товар', 20, 2);
-$weightedProduct = new WeightedProduct('Товар на вес', 20, 2.5);
-
-
-echo "Доход от ". $digitalProduct->getName(). ": ". $digitalProduct->calculateFinalCost() . "<br>";
-echo "Доход от ". $physicalProduct->getName(). ": ". $digitalProduct->calculateFinalCost() . "<br>";
-echo "Доход от ". $weightedProduct ->getName(). ": ". $digitalProduct->calculateFinalCost() . "<br>";
-
-
+$comment = new Comment(1,1, 1, $faker->realText());
+echo $comment."<br>";
 

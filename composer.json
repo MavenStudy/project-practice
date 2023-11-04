@@ -1,0 +1,19 @@
+{
+    "name": "maven/project-practice",
+    "autoload": {
+        "psr-4": {
+            "Maven\\ProjectPractice\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Shilov Ilya"
+        }
+    ],
+    "require": {
+        "fakerphp/faker": "^1.23"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest"
+    }
+}
