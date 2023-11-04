@@ -19,6 +19,6 @@ class inMemoryUserRepository{
                 return $user;
             }
         }
-        throw  new UserNotFoundException("Пользователь не найден: $id");
+        throw new UserNotFoundException("Пользователь не найден: $id");
     }
 }
