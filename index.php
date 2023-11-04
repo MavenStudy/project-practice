@@ -1,41 +1,82 @@
 <?php
-include 'Product.php';
-include 'Cart.php';
-include 'DiscountedProduct.php';
-include "User.php";
-include "Review.php";
-include "FeedbackForm.php";
+abstract class AbstractProduct
+{
+    protected $name;
 
-$product1 = new Product(1, "Звезда", 100, "Пятиугольная", "1.jpg");
-$product2 = new Product(2, "Звезда", 200, "Пятиугольная", "1.jpg");
-$discountedProduct = new DiscountedProduct($product2, 0.2);
+    public function getName()
+    {
+        return $this->name;
+    }
 
-$cart = new Cart();
-$cart->addProduct($product1, 1);
-$cart->addProduct($product2, 8);
-$cart->addProduct($discountedProduct , 4);
-$cart->removeProduct($product1);
+    public function getPrice()
+    {
+        return $this->price;
+    }
+    protected $price;
 
-$cartContents = $cart->getProducts();
+    public function __construct($name, $price)
+    {
+        $this->name = $name;
+        $this->price = $price;
+    }
 
-echo $product2;
-foreach ($cartContents as $item) {
-    $product = $item['product'];
-    $quantity = $item['quantity'];
-    echo "Продукт: " . $product->getName() . "<br> Количество: " . $quantity . "<br>";
+    abstract public function calculateFinalCost();
+
 }
 
-echo "Общая стоимость: " . $cart->calculateTotalPrice(). "<br>";
-echo $discountedProduct;
+class DigitalProduct extends AbstractProduct
+{
+    protected $quantity;
+    public function __construct($name, $price, $quantity)
+    {
+        parent::__construct($name, $price);
+        $this->quantity = $quantity;
+    }
+    public function calculateFinalCost()
+    {
+        return $this->price/2 * $this->quantity;
+    }
+}
 
-$user = new User(1, "babus", "babus@ex.com");
+class PhysicalProduct extends AbstractProduct
+{
+    protected $quantity;
 
-echo $user;
-$review = new Review(1,1, 1, 5, "Отличный");
-echo $review;
+    public function __construct($name, $price, $quantity)
+    {
+        parent::__construct($name, $price);
+        $this->quantity = $quantity;
+    }
+
+    public function calculateFinalCost()
+    {
+        return $this->price * $this->quantity;
+    }
+}
+class WeightedProduct extends AbstractProduct
+{
+    protected $weight;
+
+    public function __construct($name, $price, $weight)
+    {
+        parent::__construct($name, $price);
+        $this->weight = $weight;
+    }
+
+    public function calculateFinalCost()
+    {
+        return $this->price * $this->weight ;
+    }
+}
+
+$digitalProduct = new DigitalProduct('Цифровой товар', 20,2);
+$physicalProduct = new PhysicalProduct('Физический товар', 20, 2);
+$weightedProduct = new WeightedProduct('Товар на вес', 20, 2.5);
 
 
-$feedback = new FeedbackForm($user, "Здравствуйте, всё понравилось");
-echo $feedback;
-$result = $feedback->sendNotification();
-echo $result;
+echo "Доход от ". $digitalProduct->getName(). ": ". $digitalProduct->calculateFinalCost() . "<br>";
+echo "Доход от ". $physicalProduct->getName(). ": ". $digitalProduct->calculateFinalCost() . "<br>";
+echo "Доход от ". $weightedProduct ->getName(). ": ". $digitalProduct->calculateFinalCost() . "<br>";
+
+
+
