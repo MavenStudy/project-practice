@@ -1,5 +1,5 @@
 <?php
-namespace Maven\ProjectPractice\Exceptions;
+namespace Maven\ProjectPractice\Blog\Exceptions;
 
 class UserNotFoundException extends \Exception {
 

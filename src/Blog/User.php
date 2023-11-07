@@ -4,16 +4,22 @@ namespace Maven\ProjectPractice\Blog;
 class User
 {
     public function __construct(
-        private int $id,
+        private UUID $uuid,
+        private string $username,
         private Name $name
     ) {}
 
-    public function getId(): int
+    public function getUuid(): UUID
     {
-        return $this->id;
+        return $this->uuid;
     }
 
-    public function getName(): string
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    public function getName(): Name
     {
         return $this->name;
     }
