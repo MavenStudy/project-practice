@@ -14,7 +14,7 @@ class Post{
 
     public function __toString()
     {
-        return 'ID '. $this->authorId .' пишет: <br>'.  $this->title .' <br>'. $this->text ;
+        return 'ID '. $this->authorId .' пишет: '.PHP_EOL.  $this->title .' '. PHP_EOL. $this->text ;
     }
 
 }

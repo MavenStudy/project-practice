@@ -14,7 +14,7 @@ class Comment{
 
     public function __toString()
     {
-        return 'ID '. $this->authorId .' прокомментировал статью: '.  $this->postId .' <br>'. $this->text ;
+        return '(ID '. $this->authorId .')'.' прокомментировал статью: '. '#' . $this->postId .' '. $this->text ;
     }
 
 }
