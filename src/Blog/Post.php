@@ -4,17 +4,36 @@ namespace Maven\ProjectPractice\Blog;
 class Post{
 
     public function __construct(
-        private int $id,
-        private int $authorId,
-        private string $title,
-        private string $text,
-    )
+        UUID $uuid,
+        UUID $authorUuid,
+        string $title,
+        string $text)
     {
+        $this->uuid = $uuid;
+        $this->authorUuid = $authorUuid;
+        $this->title = $title;
+        $this->text = $text;
     }
 
-    public function __toString()
+    public function getUuid(): UUID
     {
-        return 'ID '. $this->authorId .' пишет: <br>'.  $this->title .' <br>'. $this->text ;
+        return $this->uuid;
     }
+
+    public function getAuthorUuid(): UUID
+    {
+        return $this->authorUuid;
+    }
+
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    public function getText(): string
+    {
+        return $this->text;
+    }
+
 
 }

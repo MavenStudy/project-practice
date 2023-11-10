@@ -3,18 +3,32 @@ namespace Maven\ProjectPractice\Blog;
 
 class Comment{
 
-    public function __construct(
-        private int $id,
-        private int $authorId,
-        private int $postId,
-        private string $text,
-    )
+    public function __construct(UUID $uuid, UUID $postUuid, UUID $authorUuid, string $text)
     {
+        $this->uuid = $uuid;
+        $this->postUuid = $postUuid;
+        $this->authorUuid = $authorUuid;
+        $this->text = $text;
     }
 
-    public function __toString()
+    public function getUuid(): UUID
     {
-        return 'ID '. $this->authorId .' прокомментировал статью: '.  $this->postId .' <br>'. $this->text ;
+        return $this->uuid;
+    }
+
+    public function getPostUuid(): UUID
+    {
+        return $this->postUuid;
+    }
+
+    public function getAuthorUuid(): UUID
+    {
+        return $this->authorUuid;
+    }
+
+    public function getText(): string
+    {
+        return $this->text;
     }
 
 }

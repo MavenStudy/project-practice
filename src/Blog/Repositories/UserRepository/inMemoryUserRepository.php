@@ -33,4 +33,13 @@ class inMemoryUserRepository implements UserRepositoryInterface{
         }
         throw  new UserNotFoundException("Пользователь не найден: $username");
     }
+    public function getAllUUIDs(): array
+    {
+        return array_map(
+            static function (User $user) {
+                return $user->getUuid();
+            },
+            $this->users
+        );
+    }
 }

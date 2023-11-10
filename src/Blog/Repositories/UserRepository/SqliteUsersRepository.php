@@ -5,6 +5,7 @@ use Maven\ProjectPractice\Blog\User;
 use Maven\ProjectPractice\Blog\Name;
 use Maven\ProjectPractice\Blog\Exceptions\UserNotFoundException;
 use Maven\ProjectPractice\Blog\UUID;
+use PDO;
 
 class SqliteUsersRepository implements UserRepositoryInterface {
     public function __construct(
@@ -22,16 +23,12 @@ class SqliteUsersRepository implements UserRepositoryInterface {
             ':last_name' => $user->getName()->getLastName()
         ]);
     }
-    public function get(UUID $uuid):User
+    public function get(UUID $uuid): User
     {
-        $statement = $this->connection->prepare(
-            "SELECT * FROM users WHERE uuid = ':uuid'"
-        );
-        $statement->execute([
-            ':uuid' => (string)$uuid
-        ]);
-        return $this->getUser($statement,(string)$uuid);
+        $statement = $this->connection->prepare("SELECT * FROM users WHERE uuid = :uuid");
+        $statement->execute([':uuid' => (string)$uuid]);
 
+        return $this->getUser($statement, $uuid);
     }
 
     public function getByUsername(string $username): User
@@ -55,5 +52,14 @@ class SqliteUsersRepository implements UserRepositoryInterface {
             new UUID($result['uuid']),
             $result['username'],
             new Name($result['first_name'],$result['last_name']));
+    }
+    public function getAllUUIDs(): array
+    {
+        $statement = $this->connection->prepare("SELECT uuid FROM users");
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_COLUMN);
+
+        return $result;
     }
 }
