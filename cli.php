@@ -10,7 +10,7 @@ use Maven\ProjectPractice\Blog\Commands\CreateCommentCommand;
 use Maven\ProjectPractice\Blog\Commands\CreateUserCommand;
 use Maven\ProjectPractice\Blog\Commands\Arguments;
 use \Maven\ProjectPractice\Blog\Post;
-use Faker\Factory;
+
 
 require_once __DIR__.'/vendor/autoload.php';
 
@@ -18,7 +18,7 @@ $connection = new PDO('sqlite:'.__DIR__.'/blog.sqlite');
 $postRepository = new SqlitePostsRepository($connection);
 $userRepository = new SqliteUsersRepository($connection);
 $commentRepository = new SqliteCommentsRepository($connection);
-$faker = Factory::create('ru_RU');
+
 
 $allUserUUIDs = $userRepository->getAllUUIDs();
 $randomUserUUID = $allUserUUIDs[array_rand($allUserUUIDs)];
@@ -30,13 +30,13 @@ $allCommentUUIDs = $commentRepository->getAllUUIDs();
 $randomCommentUUID = $allCommentUUIDs[array_rand($allCommentUUIDs)];
 
 #save для User
-//$command = new CreateUserCommand($userRepository);
-//try {
-//    $command->handle(Arguments::fromArgv($argv));
-//    echo "Пользователь успешно создан.\n";
-//} catch (CommandException $error) {
-//    echo $error->getMessage()."\n";
-//}
+$command = new CreateUserCommand($userRepository);
+try {
+    $command->handle(Arguments::fromArgv($argv));
+    echo "Пользователь успешно создан.\n";
+} catch (CommandException $error) {
+    echo $error->getMessage()."\n";
+}
 
 #get для User
 //try {

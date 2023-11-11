@@ -10,11 +10,13 @@ use Maven\ProjectPractice\Blog\Commands\CreateCommentCommand;
 use Maven\ProjectPractice\Blog\Commands\CreateUserCommand;
 use Maven\ProjectPractice\Blog\Commands\Arguments;
 use \Maven\ProjectPractice\Blog\Post;
-
+use Faker\Factory;
 
 require_once __DIR__.'/vendor/autoload.php';
+$faker = Factory::create('ru_RU');
 
 $connection = new PDO('sqlite:'.__DIR__.'/blog.sqlite');
+
 $postRepository = new SqlitePostsRepository($connection);
 $userRepository = new SqliteUsersRepository($connection);
 $commentRepository = new SqliteCommentsRepository($connection);
@@ -86,19 +88,19 @@ $randomCommentUUID = $allCommentUUIDs[array_rand($allCommentUUIDs)];
 
 
 #save для Comment
-//$command = new CreateCommentCommand($commentRepository,$userRepository, $postRepository);
-//$arguments = new Arguments([
-//    'post_uuid' => $randomPostUUID,
-//    'author_uuid' => $randomUserUUID,
-//    'text' => $faker->realText,
-//]);
-//
-//try {
-//    $command->handle($arguments);
-//    echo "Комментарий успешно создан.\n";
-//} catch (\Exception $error) {
-//    echo "Ошибка: " . $error->getMessage() . "\n";
-//}
+$command = new CreateCommentCommand($commentRepository,$userRepository, $postRepository);
+$arguments = new Arguments([
+    'post_uuid' => $randomPostUUID,
+    'author_uuid' => $randomUserUUID,
+    'text' => $faker->realText,
+]);
+
+try {
+    $command->handle($arguments);
+    echo "Комментарий успешно создан.\n";
+} catch (\Exception $error) {
+    echo "Ошибка: " . $error->getMessage() . "\n";
+}
 
 #get для Comment
 //try {
