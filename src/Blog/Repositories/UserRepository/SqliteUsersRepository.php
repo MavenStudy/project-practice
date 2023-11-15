@@ -46,7 +46,7 @@ class SqliteUsersRepository implements UserRepositoryInterface {
         $result = $statement->fetch(\PDO::FETCH_ASSOC);
         if ($result === false)
         {
-            throw new UserNotFoundException('Не найден пользователь: $payload');
+            throw new UserNotFoundException("Не найден пользователь: $payload");
         }
         return new User(
             new UUID($result['uuid']),

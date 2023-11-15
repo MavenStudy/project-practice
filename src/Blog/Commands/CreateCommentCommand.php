@@ -43,7 +43,7 @@ class CreateCommentCommand{
         );
         $this->commentRepository->save($comment);
     }
-    private function postExists(UUID $postUuid): bool
+    public function postExists(UUID $postUuid): bool
     {
         try {
             $this->postRepository->get($postUuid);
@@ -54,7 +54,7 @@ class CreateCommentCommand{
         return true;
     }
 
-    private function authorExists(UUID $authorUuid): bool
+    public function authorExists(UUID $authorUuid): bool
     {
         try {
             $this->userRepository->get($authorUuid);
