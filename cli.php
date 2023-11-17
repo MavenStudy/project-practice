@@ -30,13 +30,13 @@ $allCommentUUIDs = $commentRepository->getAllUUIDs();
 $randomCommentUUID = $allCommentUUIDs[array_rand($allCommentUUIDs)];
 
 #save для User
-//$command = new CreateUserCommand($userRepository);
-//try {
-//    $command->handle(Arguments::fromArgv($argv));
-//    echo "Пользователь успешно создан.\n";
-//} catch (CommandException $error) {
-//    echo $error->getMessage()."\n";
-//}
+$command = new CreateUserCommand($userRepository);
+try {
+    $command->handle(Arguments::fromArgv($argv));
+    echo "Пользователь успешно создан.\n";
+} catch (CommandException $error) {
+    echo $error->getMessage()."\n";
+}
 
 #get для User
 //try {

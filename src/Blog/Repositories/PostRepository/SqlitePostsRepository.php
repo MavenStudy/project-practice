@@ -42,6 +42,12 @@ class SqlitePostsRepository implements PostRepositoryInterface {
         );
     }
 
+    public function delete(UUID $uuid): void
+    {
+        $statement = $this->connection->prepare("DELETE FROM posts WHERE uuid = :uuid");
+        $statement->execute([':uuid' => (string)$uuid]);
+    }
+
     public function getByAuthor(UUID $authorUuid): array
     {
         $statement = $this->connection->prepare("SELECT * FROM posts WHERE author_uuid = :author_uuid");
@@ -86,4 +92,5 @@ class SqlitePostsRepository implements PostRepositoryInterface {
 
         return $result;
     }
+
 }

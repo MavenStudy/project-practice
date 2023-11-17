@@ -11,7 +11,7 @@ class UUID
     {
         if(!uuid_is_valid($uuid))
         {
-            throw new InvalidArgumentException("Ошибка UUID: $uuid");
+            throw new InvalidArgumentException("Ошибка синтаксиса UUID: $uuid");
         }
     }
 
