@@ -1,8 +1,10 @@
 <?php
 
+use Maven\ProjectPractice\Blog\Commands\CreateLikeCommand;
+use Maven\ProjectPractice\Blog\Repositories\CommentRepository\SqliteCommentsRepository;
+use Maven\ProjectPractice\Blog\Repositories\LikeRepository\SqliteLikesRepository;
 use Maven\ProjectPractice\Blog\Repositories\PostRepository\SqlitePostsRepository;
 use Maven\ProjectPractice\Blog\Repositories\UserRepository\SqliteUsersRepository;
-use Maven\ProjectPractice\Blog\Repositories\CommentRepository\SqliteCommentsRepository;
 use Maven\ProjectPractice\Blog\UUID;
 use Maven\ProjectPractice\Blog\Exceptions\CommandException;
 use Maven\ProjectPractice\Blog\Commands\CreatePostCommand;
@@ -20,6 +22,7 @@ $connection = new PDO('sqlite:'.__DIR__.'/blog.sqlite');
 $postRepository = new SqlitePostsRepository($connection);
 $userRepository = new SqliteUsersRepository($connection);
 $commentRepository = new SqliteCommentsRepository($connection);
+$likeRepository = new SqliteLikesRepository($connection);
 $faker = Factory::create('ru_RU');
 
 $allUserUUIDs = $userRepository->getAllUUIDs();
@@ -30,6 +33,20 @@ $randomPostUUID = $allPostUUIDs[array_rand($allPostUUIDs)];
 
 $allCommentUUIDs = $commentRepository->getAllUUIDs();
 $randomCommentUUID = $allCommentUUIDs[array_rand($allCommentUUIDs)];
+
+#save для Like
+$command = new CreateLikeCommand($likeRepository,$userRepository, $postRepository);
+$arguments = new Arguments([
+    'post_uuid' => $randomPostUUID,
+    'author_uuid' => $randomUserUUID
+]);
+
+try {
+    $command->handle($arguments);
+    echo "Лайк поставлен!\n";
+} catch (\Exception $error) {
+    echo  $error->getMessage() . "\n";
+}
 
 #save для User
 //$command = new CreateUserCommand($userRepository);
@@ -88,19 +105,19 @@ $randomCommentUUID = $allCommentUUIDs[array_rand($allCommentUUIDs)];
 
 
 #save для Comment
-$command = new CreateCommentCommand($commentRepository,$userRepository, $postRepository);
-$arguments = new Arguments([
-    'post_uuid' => $randomPostUUID,
-    'author_uuid' => $randomUserUUID,
-    'text' => $faker->realText,
-]);
-
-try {
-    $command->handle($arguments);
-    echo "Комментарий успешно создан.\n";
-} catch (\Exception $error) {
-    echo "Ошибка: " . $error->getMessage() . "\n";
-}
+//$command = new CreateCommentCommand($commentRepository,$userRepository, $postRepository);
+//$arguments = new Arguments([
+//    'post_uuid' => $randomPostUUID,
+//    'author_uuid' => $randomUserUUID,
+//    'text' => $faker->realText,
+//]);
+//
+//try {
+//    $command->handle($arguments);
+//    echo "Комментарий успешно создан.\n";
+//} catch (\Exception $error) {
+//    echo "Ошибка: " . $error->getMessage() . "\n";
+//}
 
 #get для Comment
 //try {

@@ -1,6 +1,7 @@
 <?php
 
 use Maven\ProjectPractice\Blog\Exceptions\PostNotFoundException;
+use Maven\ProjectPractice\Blog\Http\Actions\Likes\AddLikeToPost;
 use Maven\ProjectPractice\Blog\Http\Actions\Posts\CreatePost;
 use Maven\ProjectPractice\Blog\Http\Actions\Posts\DeletePost;
 use Maven\ProjectPractice\Blog\Http\ErrorResponse;
@@ -8,6 +9,7 @@ use Maven\ProjectPractice\Blog\Http\Request;
 use Maven\ProjectPractice\Blog\Http\SuccessfulResponse;
 use Maven\ProjectPractice\Blog\Exceptions\HttpException;
 use Maven\ProjectPractice\Blog\Http\Actions\Users\FindByUsername;
+use Maven\ProjectPractice\Blog\Repositories\LikeRepository\SqliteLikesRepository;
 use Maven\ProjectPractice\Blog\Repositories\UserRepository\SqliteUsersRepository;
 use Maven\ProjectPractice\Blog\Repositories\CommentRepository\SqliteCommentsRepository;
 use Maven\ProjectPractice\Blog\Repositories\PostRepository\SqlitePostsRepository;
@@ -15,9 +17,11 @@ use Maven\ProjectPractice\Blog\Http\Actions\Users\CreateUser;
 use Maven\ProjectPractice\Blog\Http\Actions\Comments\CreateComment;
 
 require_once __DIR__.'/vendor/autoload.php';
+
 $commentRepository = new SqliteCommentsRepository(new PDO('sqlite:' . __DIR__ . '/blog.sqlite'));
 $userRepository = new SqliteUsersRepository(new PDO('sqlite:' . __DIR__ . '/blog.sqlite'));
 $postRepository = new SqlitePostsRepository(new PDO('sqlite:' . __DIR__ . '/blog.sqlite'));
+$likeRepository = new SqliteLikesRepository(new PDO('sqlite:' . __DIR__ . '/blog.sqlite'));
 
 $request = new Request($_GET, $_SERVER,file_get_contents('php://input'));
 
@@ -48,6 +52,12 @@ $routes = [
 //                  "text": "text"
 //              }
         '/comments/create' => new CreateComment($commentRepository, $userRepository, $postRepository),
+    //          http://localhost:8000/posts/like/add
+    //          {
+    //              "post_uuid": "8ed1dd98-6602-4a8d-a307-b5d11d897e92",
+    //              "author_uuid": "5515a65a-c928-4c67-aa67-3f20e54a2d53"
+    //           }
+        '/posts/like/add' => new AddLikeToPost($likeRepository, $userRepository, $postRepository),
     ],
     'DELETE'=>[
 //            http://localhost:8000/posts/delete?uuid=a9a59b28-a805-4b99-a270-eee7d697374b
