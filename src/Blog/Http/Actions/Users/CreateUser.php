@@ -12,16 +12,19 @@ use Maven\ProjectPractice\Blog\Name;
 use Maven\ProjectPractice\Blog\Repositories\UserRepository\UserRepositoryInterface;
 use Maven\ProjectPractice\Blog\User;
 use Maven\ProjectPractice\Blog\UUID;
+use Psr\Log\LoggerInterface;
 
 class CreateUser implements ActionInterface {
     public function __construct(
-        private UserRepositoryInterface $userRepository
+        private UserRepositoryInterface $userRepository,
+        private LoggerInterface $logger
     )
     {
     }
     public function handle(Request $request): Response
     {
         try {
+            $this->logger->info("Вызвано сохранение пользователя");
             $uuid = UUID::random();
 
             $user = new User(
@@ -34,9 +37,11 @@ class CreateUser implements ActionInterface {
             );
         } catch (HttpException $exception)
         {
-            return new ErrorResponse($exception->getMessage());
+            $this->logger->error($exception->getMessage(),['exception'=>$exception]);
+            return new ErrorResponse();
         }
         $this->userRepository->save($user);
+        $this->logger->info("Пользователь создан: $uuid");
         return new SuccessfulResponse([
             'uuid'=> (string)$uuid
         ]);

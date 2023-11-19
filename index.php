@@ -34,19 +34,7 @@ $randomPostUUID = $allPostUUIDs[array_rand($allPostUUIDs)];
 $allCommentUUIDs = $commentRepository->getAllUUIDs();
 $randomCommentUUID = $allCommentUUIDs[array_rand($allCommentUUIDs)];
 
-#save для Like
-$command = new CreateLikeCommand($likeRepository,$userRepository, $postRepository);
-$arguments = new Arguments([
-    'post_uuid' => $randomPostUUID,
-    'author_uuid' => $randomUserUUID
-]);
 
-try {
-    $command->handle($arguments);
-    echo "Лайк поставлен!\n";
-} catch (\Exception $error) {
-    echo  $error->getMessage() . "\n";
-}
 
 #save для User
 //$command = new CreateUserCommand($userRepository);

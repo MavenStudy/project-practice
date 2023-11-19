@@ -8,28 +8,35 @@ use Maven\ProjectPractice\Blog\Exceptions\CommandException;
 use  Maven\ProjectPractice\Blog\User;
 use Maven\ProjectPractice\Blog\UUID;
 use Maven\ProjectPractice\Blog\Name;
+use Psr\Log\LoggerInterface;
+
 class CreateUserCommand{
     public function __construct(
         private UserRepositoryInterface $userRepository,
+        private LoggerInterface $logger
     )
     {
     }
     public function handle(Arguments $arguments):void
     {
+        $this->logger->info("Вызвано сохранение пользователя");
         $username = $arguments->get('username');
 
         if ($this->userExist($username))
         {
+            $this->logger->warning("Пользователь: $username уже существует");
             throw new CommandException("Пользователь: $username уже существует");
         }
+        $uuid = UUID::random();
         $this->userRepository->save(new User(
-            UUID::random(),
+                $uuid,
                 $username,
             new Name(
                 $arguments->get('first_name'),
                 $arguments->get('last_name'))
             )
         );
+        $this->logger->info("Пользователь создан: $uuid");
     }
     public function userExist(string $username):bool
     {

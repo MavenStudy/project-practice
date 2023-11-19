@@ -10,20 +10,22 @@ use Maven\ProjectPractice\Blog\Exceptions\CommandException;
 use Maven\ProjectPractice\Blog\User;
 use Maven\ProjectPractice\Blog\UUID;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class CreateUserCommandTest extends TestCase
 {
     public function testItTrowsAnExceptionWhenUserAlreadyExists():void
-    {
-        $command = new CreateUserCommand($this->createMock(UserRepositoryInterface::class));
+    {   $logger = $this->createMock(LoggerInterface::class);
+        $command = new CreateUserCommand($this->createMock(UserRepositoryInterface::class),$logger);
         $this->expectException(CommandException::class);
         $this->expectExceptionMessage("Пользователь: user уже существует");
 
         $command->handle(new Arguments(['username'=>'user']));
     }
     public function testItRequiresFirstName():void{
+        $logger = $this->createMock(LoggerInterface::class);
         $userRepository = $this->makeUserRepository();
-        $command= new CreateUserCommand($userRepository);
+        $command= new CreateUserCommand($userRepository,$logger);
         $this->expectException(ArgumentsException::class);
         $this->expectExceptionMessage("Отсутствует: first_name");
 
@@ -31,8 +33,9 @@ class CreateUserCommandTest extends TestCase
 
     }
     public function testItRequiresLastName():void{
+        $logger = $this->createMock(LoggerInterface::class);
         $userRepository = $this->makeUserRepository();
-        $command= new CreateUserCommand($userRepository);
+        $command= new CreateUserCommand($userRepository,$logger );
         $this->expectException(ArgumentsException::class);
         $this->expectExceptionMessage("Отсутствует: last_name");
         $command->handle(new Arguments(['username'=>'user','first_name'=>'user']));

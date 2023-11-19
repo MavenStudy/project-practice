@@ -9,7 +9,7 @@ use PDO;
 
 class SqliteUsersRepository implements UserRepositoryInterface {
     public function __construct(
-       private \PDO $connection,
+       private \PDO $connection
     ){}
     public function save(User $user): void
     {

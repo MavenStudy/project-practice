@@ -15,6 +15,10 @@ use Maven\ProjectPractice\Blog\Repositories\CommentRepository\SqliteCommentsRepo
 use Maven\ProjectPractice\Blog\Repositories\PostRepository\SqlitePostsRepository;
 use Maven\ProjectPractice\Blog\Http\Actions\Users\CreateUser;
 use Maven\ProjectPractice\Blog\Http\Actions\Comments\CreateComment;
+use Monolog\Handler\FilterHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use Psr\Log\LogLevel;
 
 require_once __DIR__.'/vendor/autoload.php';
 
@@ -24,6 +28,18 @@ $postRepository = new SqlitePostsRepository(new PDO('sqlite:' . __DIR__ . '/blog
 $likeRepository = new SqliteLikesRepository(new PDO('sqlite:' . __DIR__ . '/blog.sqlite'));
 
 $request = new Request($_GET, $_SERVER,file_get_contents('php://input'));
+
+$logger = new Logger('blog');
+
+$handler = new StreamHandler(__DIR__ . '/logs/blog.log');
+$logger->pushHandler($handler);
+
+$handler = new StreamHandler(__DIR__ . '/logs/blog.error.log');
+$handler = new FilterHandler($handler, LogLevel::ERROR);
+$logger->pushHandler($handler);
+
+$handler = new StreamHandler('php://stdout');
+$logger->pushHandler($handler);
 
 try {
     $path = $request->path() ;
@@ -42,7 +58,7 @@ $routes = [
         '/users/show' => new FindByUsername($userRepository)
     ],
     'POST'=>[
-        '/users/create' => new CreateUser($userRepository),
+        '/users/create' => new CreateUser($userRepository,$logger),
         '/posts/create' => new CreatePost($postRepository, $userRepository),
 
 //              http://localhost:8000/comments/create
@@ -51,7 +67,7 @@ $routes = [
 //                  "author_uuid": "eccf0eb2-cae3-4763-8eca-06cbfa4115be",
 //                  "text": "text"
 //              }
-        '/comments/create' => new CreateComment($commentRepository, $userRepository, $postRepository),
+        '/comments/create' => new CreateComment($commentRepository, $userRepository, $postRepository,$logger),
     //          http://localhost:8000/posts/like/add
     //          {
     //              "post_uuid": "8ed1dd98-6602-4a8d-a307-b5d11d897e92",
@@ -65,15 +81,13 @@ $routes = [
     ],
 ];
 
-if (!array_key_exists($method, $routes)) {
-    (new ErrorResponse('Не найдено'))->send();
+if (!array_key_exists($method, $routes)||!array_key_exists($path, $routes[$method])) {
+    $message = "Не найден путь: $method $path ";
+    $logger->notice($message);
+    (new ErrorResponse($message))->send();
     return;
 }
 
-if (!array_key_exists($path, $routes[$method])) {
-    (new ErrorResponse('Не найдено'))->send();
-    return;
-}
 
 $actions = $routes[$method][$path];
 
@@ -84,7 +98,8 @@ try {
         $response = $actions->handle($request);
     }
 } catch (Exception $error) {
-    (new ErrorResponse($error->getMessage()))->send();
+    $logger->error($error->getMessage());
+    (new ErrorResponse())->send();
     return;
 }
 

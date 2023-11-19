@@ -13,6 +13,7 @@ use Maven\ProjectPractice\Blog\User;
 use Maven\ProjectPractice\Blog\UUID;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class CreatePostCommandTest extends TestCase
 {
@@ -30,8 +31,8 @@ class CreatePostCommandTest extends TestCase
         $postRepositoryMock->expects($this->once())
             ->method('save')
             ->with($this->isInstanceOf(Post::class));
-
-        $command = new CreatePostCommand($postRepositoryMock, $userRepositoryMock);
+        $logger = $this->createMock(LoggerInterface::class);
+        $command = new CreatePostCommand($postRepositoryMock, $userRepositoryMock,$logger);
 
         $arguments = new Arguments([
             'author_uuid' => $authorUuid,
@@ -45,8 +46,9 @@ class CreatePostCommandTest extends TestCase
     {
         $postRepositoryMock = $this->createMock(PostRepositoryInterface::class);
         $userRepositoryMock = $this->createMock(UserRepositoryInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
         $command = $this->getMockBuilder(CreatePostCommand::class)
-            ->setConstructorArgs([$postRepositoryMock, $userRepositoryMock])
+            ->setConstructorArgs([$postRepositoryMock, $userRepositoryMock,$logger])
             ->onlyMethods(['authorExists'])
             ->getMock();
         $command->expects($this->once())
@@ -67,10 +69,10 @@ class CreatePostCommandTest extends TestCase
         $userRepositoryMock->method('get')
             ->with($authorUuid)
             ->willThrowException(new UserNotFoundException());
-
+        $logger = $this->createMock(LoggerInterface::class);
         $command = new CreatePostCommand(
             $this->createMock(PostRepositoryInterface::class),
-            $userRepositoryMock
+            $userRepositoryMock, $logger
         );
 
         $this->assertFalse($command->authorExists($authorUuid));

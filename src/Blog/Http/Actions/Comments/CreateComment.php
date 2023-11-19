@@ -15,12 +15,14 @@ use Maven\ProjectPractice\Blog\Repositories\UserRepository\UserRepositoryInterfa
 use Maven\ProjectPractice\Blog\Repositories\PostRepository\PostRepositoryInterface;
 use Maven\ProjectPractice\Blog\Comment;
 use Maven\ProjectPractice\Blog\UUID;
+use Psr\Log\LoggerInterface;
 
 class CreateComment implements ActionInterface {
     public function __construct(
         private CommentRepositoryInterface $commentRepository,
         private UserRepositoryInterface $userRepository,
-        private PostRepositoryInterface $postRepository
+        private PostRepositoryInterface $postRepository,
+        private LoggerInterface $logger
     )
     {
     }
@@ -30,7 +32,7 @@ class CreateComment implements ActionInterface {
      * @throws HttpException
      */
     public function handle(Request $request): Response
-    {
+    {   $this->logger->info("Вызвано сохранение комментария");
         $uuid = UUID::random();
         $postUuid = new UUID($request->jsonBodyField('post_uuid'));
         $authorUuid = new UUID($request->jsonBodyField('author_uuid'));
@@ -40,9 +42,11 @@ class CreateComment implements ActionInterface {
             $comment = new Comment($uuid, $postUuid, $authorUuid, $text);
         } catch (HttpException $exception)
         {
+            $this->logger->error($exception->getMessage());
             return new ErrorResponse($exception->getMessage());
         }
         $this->commentRepository->save($comment);
+        $this->logger->info("Комментарий создан: $uuid");
         return new SuccessfulResponse([
             'uuid'=> (string)$uuid
         ]);

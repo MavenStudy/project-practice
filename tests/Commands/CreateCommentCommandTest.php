@@ -16,6 +16,7 @@ use Maven\ProjectPractice\Blog\User;
 use Maven\ProjectPractice\Blog\UUID;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class CreateCommentCommandTest extends TestCase
 {
@@ -37,8 +38,8 @@ class CreateCommentCommandTest extends TestCase
         $commentRepositoryMock->expects($this->once())
             ->method('save')
             ->with($this->isInstanceOf(Comment::class));
-
-        $command = new CreateCommentCommand($commentRepositoryMock, $userRepositoryMock, $postRepositoryMock);
+        $logger = $this->createMock(LoggerInterface::class);
+        $command = new CreateCommentCommand($commentRepositoryMock, $userRepositoryMock, $postRepositoryMock, $logger );
 
         $arguments = new Arguments([
             'author_uuid' => $authorUuid,
@@ -52,8 +53,9 @@ class CreateCommentCommandTest extends TestCase
         $commentRepositoryMock = $this->createMock(CommentRepositoryInterface::class);
         $postRepositoryMock = $this->createMock(PostRepositoryInterface::class);
         $userRepositoryMock = $this->createMock(UserRepositoryInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
         $command = $this->getMockBuilder(CreateCommentCommand::class)
-            ->setConstructorArgs([$commentRepositoryMock, $userRepositoryMock,$postRepositoryMock])
+            ->setConstructorArgs([$commentRepositoryMock, $userRepositoryMock,$postRepositoryMock,$logger])
             ->onlyMethods(['postExists','authorExists'])
             ->getMock();
         $command->expects($this->once())
@@ -74,8 +76,8 @@ class CreateCommentCommandTest extends TestCase
 
         $userRepositoryMock->method('get')
             ->willThrowException(new UserNotFoundException());
-
-        $command = new CreateCommentCommand($commentRepositoryMock, $userRepositoryMock,$postRepositoryMock);
+        $logger = $this->createMock(LoggerInterface::class);
+        $command = new CreateCommentCommand($commentRepositoryMock, $userRepositoryMock,$postRepositoryMock,$logger );
         $result = $command->authorExists(UUID::random());
         $this->assertFalse($result);
     }
@@ -87,8 +89,8 @@ class CreateCommentCommandTest extends TestCase
 
         $postRepositoryMock->method('get')
             ->willThrowException(new PostNotFoundException());
-
-        $command = new CreateCommentCommand($commentRepositoryMock, $userRepositoryMock,$postRepositoryMock);
+        $logger = $this->createMock(LoggerInterface::class);
+        $command = new CreateCommentCommand($commentRepositoryMock, $userRepositoryMock,$postRepositoryMock,$logger);
         $result = $command->postExists(UUID::random());
         $this->assertFalse($result);
     }

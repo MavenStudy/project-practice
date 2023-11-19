@@ -13,43 +13,42 @@ use Maven\ProjectPractice\Blog\Repositories\UserRepository\UserRepositoryInterfa
 use Maven\ProjectPractice\Blog\Exceptions\CommandException;
 use Maven\ProjectPractice\Blog\Comment;
 use Maven\ProjectPractice\Blog\UUID;
+use Psr\Log\LoggerInterface;
 
 class CreateLikeCommand{
-    private LikeRepositoryInterface $likeRepository;
-    private UserRepositoryInterface $userRepository;
-    private PostRepositoryInterface $postRepository;
 
     public function __construct(
-        LikeRepositoryInterface $likeRepository,
-        UserRepositoryInterface $userRepository,
-        PostRepositoryInterface $postRepository
+        private LikeRepositoryInterface $likeRepository,
+        private UserRepositoryInterface $userRepository,
+        private PostRepositoryInterface $postRepository,
+        private LoggerInterface $logger
     ) {
-        $this->likeRepository = $likeRepository;
-        $this->userRepository = $userRepository;
-        $this->postRepository = $postRepository;
     }
     public function handle(Arguments $arguments): void
     {
+        $this->logger->info("Вызвано сохранение лайка");
         $postUuid = new UUID($arguments->get('post_uuid'));
         $authorUuid = new UUID($arguments->get('author_uuid'));
 
         if (!$this->postExists($postUuid) || !$this->authorExists($authorUuid)) {
-            throw new CommandException("Пост или автор не найден: {$postUuid} или {$authorUuid}");
+            $this->logger->warning("Пост или автор не найден: {$postUuid} или {$authorUuid}");
         }
 
         $likesByPost = $this->likeRepository->getByPost($postUuid);
         foreach ($likesByPost as $like) {
             if ((string)$like->getAuthorUuid() === (string)$authorUuid) {
-                throw new CommandException("Лайк уже был поставлен");
+                $this->logger->notice("Лайк уже был поставлен");
+               throw new CommandException("Лайк уже был поставлен");
             }
         }
-
+        $uuid = UUID::random();
         $like = new Like(
-            UUID::random(),
+            $uuid,
             $postUuid,
             $authorUuid
         );
         $this->likeRepository->save($like);
+        $this->logger->info("Лайк поставлен: $uuid ");
     }
 
     public function postExists(UUID $postUuid): bool

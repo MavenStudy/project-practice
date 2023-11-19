@@ -10,14 +10,16 @@ use Maven\ProjectPractice\Blog\Exceptions\CommandException;
 use  Maven\ProjectPractice\Blog\Post;
 use Maven\ProjectPractice\Blog\UUID;
 use Maven\ProjectPractice\Blog\Name;
-class CreatePostCommand{
-    private PostRepositoryInterface $postRepository;
-    private UserRepositoryInterface $userRepository;
+use Psr\Log\LoggerInterface;
 
-    public function __construct(PostRepositoryInterface $postRepository,UserRepositoryInterface $userRepository)
+class CreatePostCommand{
+
+
+    public function __construct(
+        private PostRepositoryInterface $postRepository,
+        private UserRepositoryInterface $userRepository,
+        private LoggerInterface $logger)
     {
-        $this->postRepository = $postRepository;
-        $this->userRepository = $userRepository;
     }
 
     /**
@@ -27,16 +29,19 @@ class CreatePostCommand{
      */
     public function handle(Arguments $arguments): void
     {
+        $this->logger->info("Вызвано сохранение поста");
         $authorUuid = new UUID($arguments->get('author_uuid'));
         $title = $arguments->get('title');
         $text = $arguments->get('text');
 
         if (!$this->authorExists($authorUuid)) {
+            $this->logger->warning("Автор не найден: $authorUuid");
             throw new CommandException("Автор не найден: $authorUuid");
         }
-
-        $post = new Post(UUID::random(), $authorUuid, $title, $text);
+        $uuid = UUID::random();
+        $post = new Post($uuid, $authorUuid, $title, $text);
         $this->postRepository->save($post);
+        $this->logger->info("Пост создан: $uuid");
     }
     public  function authorExists(UUID $authorUuid): bool
     {
