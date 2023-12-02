@@ -39,9 +39,9 @@ $number_posts = 5;
 $number_comments = 5;
 
 $users = new CreateUsers($userRepository, $faker, $logger);
-$users->createUsers($number_users);
+$users->create($number_users);
 $posts = new CreatePosts($postRepository,$userRepository,  $faker, $logger);
-$posts->createPosts($number_posts);
+$posts->create($number_posts);
 $comments = new CreateComments($commentRepository,$postRepository,$userRepository,  $faker, $logger);
-$comments->createComments($number_comments);
+$comments->create($number_comments);
 

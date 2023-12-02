@@ -18,7 +18,7 @@ class CreateUsers
         $this->logger = $logger;
     }
 
-    public function createUsers($number_users): void
+    public function create($number_users): void
     {
         $command = new CreateUserCommand($this->userRepository, $this->logger);
 

@@ -34,16 +34,27 @@ $logger->pushHandler($handler);
 $handler = new StreamHandler('php://stdout');
 $logger->pushHandler($handler);
 
-$number_users = (int)$argv[1];
-$number_posts = (int)$argv[2];
-$number_comments = (int)$argv[3];
+$commandClasses = [
+    CreateUsers::class,
+    CreatePosts::class,
+    CreateComments::class,
+];
 
-$users = new CreateUsers($userRepository, $faker, $logger);
-$users->createUsers($number_users);
+$commandDependencies = [
+    CreateUsers::class => [$userRepository, $faker, $logger],
+    CreatePosts::class => [$postRepository, $userRepository, $faker, $logger],
+    CreateComments::class => [$commentRepository, $postRepository, $userRepository, $faker, $logger],
+];
 
-$posts = new CreatePosts($postRepository,$userRepository,  $faker, $logger);
-$posts->createPosts($number_posts);
+$commandNumbers = [
+    CreateUsers::class =>  (int)$argv[1],
+    CreatePosts::class => (int)$argv[2],
+    CreateComments::class => (int)$argv[3],
+];
 
-$comments = new CreateComments($commentRepository,$postRepository,$userRepository,  $faker, $logger);
-$comments->createComments($number_comments);
+foreach ($commandClasses as $commandClass) {
+    $command = new $commandClass(...$commandDependencies[$commandClass]);
+    $number = $commandNumbers[$commandClass];
+    $command->create($number);
+}
 

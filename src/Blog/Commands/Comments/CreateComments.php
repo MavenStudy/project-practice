@@ -22,7 +22,7 @@ class CreateComments
         $this->logger = $logger;
     }
 
-    function createComments($number_comments): void
+    function create($number_comments): void
     {
         $allPostUUIDs = $this->postRepository->getAllUUIDs();
         $randomPostUUID = $allPostUUIDs[array_rand($allPostUUIDs)];

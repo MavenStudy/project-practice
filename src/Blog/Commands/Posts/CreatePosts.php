@@ -20,7 +20,7 @@ class CreatePosts
         $this->logger = $logger;
     }
 
-    function createPosts($number_posts): void
+    function create($number_posts): void
     {
         $allUserUUIDs =  $this->userRepository->getAllUUIDs();
         $randomUserUUID = $allUserUUIDs[array_rand($allUserUUIDs)];
