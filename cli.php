@@ -34,27 +34,37 @@ $logger->pushHandler($handler);
 $handler = new StreamHandler('php://stdout');
 $logger->pushHandler($handler);
 
-$commandClasses = [
-    CreateUsers::class,
-    CreatePosts::class,
-    CreateComments::class,
+$commandsMap = [
+    'user:create' => function ($userRepository, $faker, $logger, $number) {
+        $command = new CreateUsers($userRepository, $faker, $logger);
+        $command->create($number);
+    },
+    'post:create' => function ($postRepository, $userRepository, $faker, $logger, $number) {
+        $command = new CreatePosts($postRepository, $userRepository, $faker, $logger);
+        $command->create($number);
+    },
+    'comment:create' => function ($commentRepository, $postRepository, $userRepository, $faker, $logger, $number) {
+        $command = new CreateComments($commentRepository, $postRepository, $userRepository, $faker, $logger);
+        $command->create($number);
+    },
 ];
 
-$commandDependencies = [
-    CreateUsers::class => [$userRepository, $faker, $logger],
-    CreatePosts::class => [$postRepository, $userRepository, $faker, $logger],
-    CreateComments::class => [$commentRepository, $postRepository, $userRepository, $faker, $logger],
-];
+$command = $argv[1];
+$number = $argv[2];
 
-$commandNumbers = [
-    CreateUsers::class =>  (int)$argv[1],
-    CreatePosts::class => (int)$argv[2],
-    CreateComments::class => (int)$argv[3],
-];
+$function = $commandsMap[$command];
 
-foreach ($commandClasses as $commandClass) {
-    $command = new $commandClass(...$commandDependencies[$commandClass]);
-    $number = $commandNumbers[$commandClass];
-    $command->create($number);
+switch ($command) {
+    case 'user:create':
+        $function($userRepository, $faker, $logger, $number);
+        break;
+    case 'post:create':
+        $function($postRepository, $userRepository, $faker, $logger, $number);
+        break;
+    case 'comment:create':
+        $function($commentRepository,$postRepository, $userRepository, $faker, $logger, $number);
+        break;
+    default:
+        echo 'Команда не найдена.';
+        break;
 }
-
