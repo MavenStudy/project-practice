@@ -1,5 +1,5 @@
 <?php
-namespace Maven\ProjectPractice\Comments;
+namespace Maven\ProjectPractice\Blog\Commands\Comments;
 
 use Maven\ProjectPractice\Blog\Commands\Arguments;
 use Maven\ProjectPractice\Blog\Commands\CreateCommentCommand;

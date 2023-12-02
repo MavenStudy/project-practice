@@ -1,5 +1,5 @@
 <?php
-namespace Maven\ProjectPractice\Users;
+namespace Maven\ProjectPractice\Blog\Commands\Users;
 
 use Maven\ProjectPractice\Blog\Commands\Arguments;
 use Maven\ProjectPractice\Blog\Commands\CreateUserCommand;

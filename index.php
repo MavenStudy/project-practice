@@ -1,14 +1,13 @@
 <?php
 
 
+use Faker\Factory;
+use Maven\ProjectPractice\Blog\Commands\Comments\CreateComments;
+use Maven\ProjectPractice\Blog\Commands\Posts\CreatePosts;
+use Maven\ProjectPractice\Blog\Commands\Users\CreateUsers;
 use Maven\ProjectPractice\Blog\Repositories\CommentRepository\SqliteCommentsRepository;
 use Maven\ProjectPractice\Blog\Repositories\PostRepository\SqlitePostsRepository;
 use Maven\ProjectPractice\Blog\Repositories\UserRepository\SqliteUsersRepository;
-
-use Faker\Factory;
-use Maven\ProjectPractice\Comments\CreateComments;
-use Maven\ProjectPractice\Posts\CreatePosts;
-use Maven\ProjectPractice\Users\CreateUsers;
 use Monolog\Handler\FilterHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;

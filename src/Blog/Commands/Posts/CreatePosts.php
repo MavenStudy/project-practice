@@ -1,9 +1,8 @@
 <?php
-namespace Maven\ProjectPractice\Posts;
+namespace Maven\ProjectPractice\Blog\Commands\Posts;
 
 use Maven\ProjectPractice\Blog\Commands\Arguments;
 use Maven\ProjectPractice\Blog\Commands\CreatePostCommand;
-use Maven\ProjectPractice\Blog\Commands\CreateUserCommand;
 use Maven\ProjectPractice\Blog\Exceptions\CommandException;
 
 class CreatePosts
